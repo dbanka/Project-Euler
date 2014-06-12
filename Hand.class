@@ -1,0 +1,234 @@
+import java.util.Arrays;
+
+
+public class Hand {
+	
+	private String input;
+	private String [] value =new String[5] ;
+	private String [] suit = new String[5];
+	
+	
+	Hand(String input)
+	{ 
+		this.input=input;
+	}
+	
+	private  void setValueSuit()
+	{
+	 int j=0;
+	 for(int a=0;a<5;a++)
+	  { 
+		value[a]= input.substring(j,j+1);
+	    suit[a]=input.substring(j+1, j+2);
+		j+=2;
+	  }
+	}   
+	
+	public static int cardValue( String Value )
+	{  
+		
+		String str = "23456789TJQKA";
+				
+		int value =str.indexOf(Value);
+		
+		return value;
+
+	}
+	
+	public static boolean checkRoyalFlush( String[] Value , String[] suit)
+	{  
+		Arrays.sort(Value);
+		String str =suit[0];
+		for(int i=1;i<5;i++)
+		{  if( suit[i] != str)
+			return false;
+		}
+
+		if( Value[0].equals("A") &&  Value[1].equals("J") && Value[2].equals("K") && Value[3].equals("Q") && Value[4].equals("T"))
+		{ return true;}
+		
+		
+		return false;
+    }
+	
+	public static boolean checkFlush( String[] Value , String[] suit)
+	{  
+		
+		String str =suit[0];
+		for(int i=1;i<5;i++)
+		{  if( suit[i] != str)
+			return false;
+		}
+		
+		return true;
+		
+	}
+
+	public static int checkStraightFlush (String[] Value , String[] suit)
+	{   
+		String str =suit[0];
+		for(int i=1;i<5;i++)
+			{  if( suit[i] != str)
+					return -1;
+			}
+		
+		 int [] p=new int[5];
+	    
+
+	     for(int i=0;i<5;i++)
+	     {  p[i] =  cardValue(Value[i]);
+	        
+	      }
+	      
+	      Arrays.sort(p);
+	      
+	     for(int i=0;i<4;i++)
+	     { if (p[i]==p[i+1]-1)
+	    	 continue;
+	     else return -1;
+	     }
+	     
+		return p[4]; 
+		
+	}
+
+
+
+
+	public static int fullHouse(String[] player1)
+	 {  
+		int [] p1=new int[5];
+	    
+	    for(int i=0;i<5;i++)
+	    { 
+	    	p1[i] =  cardValue(player1[i]);
+	     }
+	     
+	     Arrays.sort(p1);
+	     
+	     int p1rank=-1;
+	     
+	     if( (p1[0]==p1[2] && p1[3]==p1[4]))
+	     { //System.out.println("full house player1");
+	       p1rank=p1[1];
+	     }
+	     else if( (p1[0]==p1[1] && p1[2]==p1[4]))
+	     {// System.out.println("full house player1");
+	       p1rank=p1[4];
+	     }
+	    
+	     return p1rank;
+		
+	 }
+
+
+
+	public static int checkStraight(String []Value)
+	{
+	   int [] p=new int[5];
+       for(int i=0;i<5;i++)
+	    {  p[i] =  cardValue(Value[i]);}
+	   Arrays.sort(p);
+	 
+	   for(int i=0;i<4;i++)
+	   { if (p[i]==p[i+1]-1)
+		  continue;
+	     else return -1;
+	    }
+
+	   return p[4]; 
+		
+		
+	}	
+
+
+
+	public static int fourOfaKind(String[] Value)
+	{    int count=0;
+	    Arrays.sort(Value);
+		for(int i=0;i<4;i++)
+	     { if (Value[i].equals(Value[i+1]))
+	   	    count++;
+	     }
+		
+		if(count==4)
+			return cardValue(Value[2]);
+		else return -1;
+		
+	}
+
+	public static int threeOfaKind(String[] Value)
+	{    int count=0;
+	    Arrays.sort(Value);
+		for(int i=0;i<4;i++)
+	     { if (Value[i].equals(Value[i+1]))
+	   	    count++;
+	     }
+		
+		if(count==3)
+			return cardValue(Value[2]);
+			else return -1;
+	}
+
+	public static int pairs(String[] Value)
+	{    int count=0,x=0;
+	     int [] p=new int[5];
+	     for(int i=0;i<5;i++)
+		  {  p[i] =  cardValue(Value[i]);}
+		 Arrays.sort(p);
+		for(int i=0;i<4;i++)
+	     { if (p[i]==p[i+1])
+	   	    count++;
+	      if(count ==1)
+	    	 x=p[i]; 
+	     }
+		if(count==1)
+			return x;
+		if(count==2)
+			return p[4]*200 +x*100;
+		else return -1;
+	}
+
+
+	public static int largestCard(String[]player1Value)
+	{  
+		int [] p1=new int[5];
+
+	    for(int i=0;i<5;i++)
+	    {  p1[i] =  cardValue(player1Value[i]);
+	        
+	    }
+	     
+	   Arrays.sort(p1);
+		
+	    return p1[0]+10*p1[1]+20*p1[2]+50*p1[3]+100*p1[4];
+	}
+	
+	
+	public int getScore()
+	{   setValueSuit();
+		int score=0;
+	
+		if (checkRoyalFlush(value, suit))
+		 return 100000000;
+		if(checkStraightFlush(value,suit) != -1)
+		 return 10000000+ checkStraightFlush(value,suit) ;
+		if(fourOfaKind(value) != -1)
+		 return 1000000+ fourOfaKind(value) ;
+		if(fullHouse(value) !=-1)
+		  return 500000+ fullHouse(value);
+		if(checkFlush(value,suit))
+		 score +=100000;
+		if(checkStraight(value) != -1)
+		  return score +50000+checkStraight(value) ;
+		if(threeOfaKind(value) != -1) 
+		 return score+10000+threeOfaKind(value);
+		if(pairs(value)!= -1)
+		 score+=1000 + pairs(value);
+		return score+ largestCard(value);
+    
+	}
+}
+	
+	
+
